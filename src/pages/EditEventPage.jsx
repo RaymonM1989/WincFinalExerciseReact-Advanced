@@ -58,7 +58,7 @@ export const EditEventPage = () =>
 
         try
         {
-            response = await fetch(`http://localhost:300/events/${eventId}`,
+            response = await fetch(`http://localhost:3000/events/${eventId}`,
             {
                 method: "PUT",
                 body: JSON.stringify(event),

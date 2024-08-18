@@ -18,7 +18,7 @@ export const loader = async () =>
 
 export const EventsList = () => 
 {
-  const { events, categories } = useLoaderData();
+  const { events, categories }                    = useLoaderData();
   const [ searchField, setSearchField ]           = useState("");
   const [ selectedCategory, setSelectedCategory ] = useState("0");
   

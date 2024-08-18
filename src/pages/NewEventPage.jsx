@@ -1,34 +1,55 @@
 import { useState }          from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useLoaderData, Link } from 'react-router-dom';
 import { Flex, 
          Heading, 
          Text, 
-         Input 
+         Select,
+         Checkbox,
+         CheckboxGroup,
+         Stack 
         }                    from '@chakra-ui/react';
+import { FormInput } from '../components/FormInput';
+
+export const loader = async () =>
+{
+    const users =      await fetch("http://localhost:3000/users");
+    const categories =  await fetch("http://localhost:3000/categories");
+
+    return { users: await users.json(), categories: await categories.json() };
+}
 
 
 export const NewEventPage = () =>
 {
     const navigate = useNavigate();
 
+    const { users, categories }             = useLoaderData();
+
     const [isLoading, setIsLoading] = useState(false);
     const noErrorState = { happened: false, msg: "" };
     const [error, setError] = useState(noErrorState);
 
     const [title, setTitle]             = useState("");
-    const [createdBy, setCreatedBy]     = useState("");
+    const [createdBy, setCreatedBy]     = useState(1);
     const [description, setDescription] = useState("");
     const [image, setImage]             = useState("");
-    const [categoryIds, setCategoryIds] = useState("");
+    const [categoryIds, setCategoryIds] = useState([]);
     const [location, setLocation]       = useState("");
     const [startTime, setStartTime]     = useState("");
     const [endTime, setEndTime]         = useState("");
-
 
     const handleSubmit = event =>
     {
         event.preventDefault();
         createEvent( { title, createdBy, description, image, categoryIds, location, startTime, endTime } );
+        console.log("title: ", title);
+        console.log("createdBy: ", createdBy);
+        console.log("description: ", description);
+        console.log("image: ", image);
+        console.log("categoryIds: ", categoryIds);
+        console.log("location: ", location);
+        console.log("startTime: ", startTime);
+        console.log("endTime: ", endTime);
     }
 
     
@@ -41,7 +62,7 @@ export const NewEventPage = () =>
 
         try
         {
-            response = await fetch("http://localhost:300/events",
+            response = await fetch("http://localhost:3000/events",
             {
                 method: "POST",
                 body: JSON.stringify(event),
@@ -149,14 +170,26 @@ export const NewEventPage = () =>
                 mt="20px"
                 >
                     <form onSubmit={handleSubmit}>
+                        
+                        <FormInput
+                            label = "Event Title"
+                            id = "eventTitle"
+                            type = "text"
+                            placeholder = "Event Title"
+                            defaultValue={title}
+                            state={setTitle}
+                            required="required"
+                        />
+
                         <Flex  
                             direction="Column" 
                             m="20px"
                             align="center" 
                         >
-                            <Text color="rgb(50, 125, 252)" >Event Title</Text>
-                            <Input
-                                type="text"
+                            <Text color="rgb(50, 125, 252)" >Creator</Text>
+                            <Select
+                                name="userIDs" 
+                                onChange={e => { setCreatedBy(parseInt(e.target.value)); }} 
                                 mt="5px" 
                                 size={{ base: "sm", md: "lg" }} 
                                 boxShadow='lg'
@@ -164,164 +197,95 @@ export const NewEventPage = () =>
                                 _placeholder={{ opacity: 0.6, color: "rgb(0, 52, 140)" }}
                                 borderWidth="2px"
                                 borderColor="rgb(50, 125, 252)"
-                                focusBorderColor="rgb(84, 144, 247)"
-                                required="required"
-                                placeholder="Event Title"
-                                onChange={e => setTitle(e.target.value)}
-                                value={title}
-                            />
-                        </Flex>
-                        <Flex  
-                            direction="Column" 
-                            m="20px"
-                            align="center" 
-                        >
-                            <Text color="rgb(50, 125, 252)" >User ID</Text>
-                            <Input
-                                type="text"
-                                mt="5px" 
-                                size={{ base: "sm", md: "lg" }} 
-                                boxShadow='lg'
-                                color="rgb(0, 52, 140)"
-                                _placeholder={{ opacity: 0.6, color: "rgb(0, 52, 140)" }}
-                                borderWidth="2px"
-                                borderColor="rgb(50, 125, 252)"
-                                focusBorderColor="rgb(84, 144, 247)"
-                                required="required"
-                                placeholder="Your User ID"
-                                onChange={e => setCreatedBy(e.target.value)}
-                                value={createdBy}
-                            />
-                        </Flex>
-                        <Flex  
-                            direction="Column" 
-                            m="20px"
-                            align="center" 
-                        >
-                            <Text color="rgb(50, 125, 252)" >Description</Text>
-                            <Input
-                                type="text"
-                                mt="5px" 
-                                size={{ base: "sm", md: "lg" }} 
-                                boxShadow='lg'
-                                color="rgb(0, 52, 140)"
-                                _placeholder={{ opacity: 0.6, color: "rgb(0, 52, 140)" }}
-                                borderWidth="2px"
-                                borderColor="rgb(50, 125, 252)"
-                                focusBorderColor="rgb(84, 144, 247)"
-                                placeholder="Event Description"
-                                onChange={e => setDescription(e.target.value)}
-                                value={description}
-                            />
-                        </Flex>
-                        <Flex  
-                            direction="Column" 
-                            m="20px"
-                            align="center" 
-                        >
-                            <Text color="rgb(50, 125, 252)" >Image URL</Text>
-                            <Input
-                                type="text"
-                                mt="5px" 
-                                size={{ base: "sm", md: "lg" }} 
-                                boxShadow='lg'
-                                color="rgb(0, 52, 140)"
-                                _placeholder={{ opacity: 0.6, color: "rgb(0, 52, 140)" }}
-                                borderWidth="2px"
-                                borderColor="rgb(50, 125, 252)"
-                                focusBorderColor="rgb(84, 144, 247)"
-                                placeholder="Image URL"
-                                onChange={e => setImage(e.target.value)}
-                                value={image}
-                            />
-                        </Flex>
-                        <Flex  
-                            direction="Column" 
-                            m="20px"
-                            align="center" 
-                        >
-                            <Text color="rgb(50, 125, 252)" >Category ID</Text>
-                            <Input
-                                type="text"
-                                mt="5px" 
-                                size={{ base: "sm", md: "lg" }} 
-                                boxShadow='lg'
-                                color="rgb(0, 52, 140)"
-                                _placeholder={{ opacity: 0.6, color: "rgb(0, 52, 140)" }}
-                                borderWidth="2px"
-                                borderColor="rgb(50, 125, 252)"
-                                focusBorderColor="rgb(84, 144, 247)"
-                                placeholder="Categories"
-                                onChange={e => setCategoryIds(e.target.value)}
-                                value={categoryIds}
-                            />
-                        </Flex>
-                        <Flex  
-                            direction="Column" 
-                            m="20px"
-                            align="center" 
-                        >
-                            <Text color="rgb(50, 125, 252)" >Location</Text>
-                            <Input
-                                type="text"
-                                mt="5px" 
-                                size={{ base: "sm", md: "lg" }} 
-                                boxShadow='lg'
-                                color="rgb(0, 52, 140)"
-                                _placeholder={{ opacity: 0.6, color: "rgb(0, 52, 140)" }}
-                                borderWidth="2px"
-                                borderColor="rgb(50, 125, 252)"
-                                focusBorderColor="rgb(84, 144, 247)"
-                                required="required"
-                                placeholder="Location"
-                                onChange={e => setLocation(e.target.value)}
-                                value={location}
-                            />
-                        </Flex>
-                        <Flex  
-                            direction="Column" 
-                            m="20px"
-                            align="center" 
-                        >
-                            <Text color="rgb(50, 125, 252)" >Start Time</Text>
-                            <Input
-                                type="text"
-                                mt="5px" 
-                                size={{ base: "sm", md: "lg" }} 
-                                boxShadow='lg'
-                                color="rgb(0, 52, 140)"
-                                _placeholder={{ opacity: 0.6, color: "rgb(0, 52, 140)" }}
-                                borderWidth="2px"
-                                borderColor="rgb(50, 125, 252)"
-                                focusBorderColor="rgb(84, 144, 247)"
-                                required="required"
-                                placeholder="Start Time"
-                                onChange={e => setStartTime(e.target.value)}
-                                value={startTime}
-                            />
-                        </Flex>
-                        <Flex  
-                            direction="Column" 
-                            m="20px"
-                            align="center" 
-                        >
-                            <Text color="rgb(50, 125, 252)" >End Time</Text>
-                            <Input
-                                type="text"
-                                mt="5px"
-                                size={{ base: "sm", md: "lg" }} 
-                                boxShadow='lg'
-                                color="rgb(0, 52, 140)"
-                                _placeholder={{ opacity: 0.6, color: "rgb(0, 52, 140)" }}
-                                borderWidth="2px"
-                                borderColor="rgb(50, 125, 252)"
-                                focusBorderColor="rgb(84, 144, 247)"
-                                placeholder="End Time"
-                                onChange={e => setEndTime(e.target.value)}
-                                value={endTime}
-                            />
+                                focusBorderColor="rgb(84, 144, 247)" 
+                            >
+                                { users.map( (user) => 
+                                    ( 
+                                        <option key={user.id} value={user.id}>{user.name}</option>
+                                    )
+                                )} 
+                            </Select>
                         </Flex>
 
+                        <FormInput
+                            label = "Description"
+                            id = "description"
+                            type = "textarea"
+                            placeholder = "Event Description"
+                            defaultValue={description}
+                            state={setDescription}
+                            required="required"
+                        />
+
+                        <FormInput
+                            label = "Image URL"
+                            id = "image"
+                            type = "url"
+                            placeholder = "Image URL"
+                            defaultValue={image}
+                            state={setImage}
+                            required="required"
+                        />
+
+                        <CheckboxGroup value={categoryIds}>
+                            <Stack spacing={[1, 5]} direction={['column', 'row']}>
+                                { categories.map( (category) => 
+                                    ( 
+                                        <Checkbox key={category.id} size='lg' value={category.id} onChange={e => 
+                                            {
+                                                const newArray = [...categoryIds];
+                                                const index = newArray.indexOf(parseInt(e.target.value));
+
+                                                if (index !== -1)
+                                                {
+                                                    newArray.splice(index, 1);
+                                                    setCategoryIds(newArray);
+                                                }
+                                                else
+                                                {
+                                                    newArray.push(parseInt(e.target.value));
+                                                    newArray.sort();
+                                                    setCategoryIds(newArray);
+                                                }
+                                            }}
+                                            >
+                                            {category.name}
+                                        </Checkbox>
+                                    )
+                                )} 
+                            </Stack>
+                        </CheckboxGroup>
+
+                        <FormInput
+                            label = "Location"
+                            id = "location"
+                            type = "text"
+                            placeholder = "Location"
+                            defaultValue={location}
+                            state={setLocation}
+                            required="required"
+                        />
+
+                        <FormInput
+                            label = "Start Time"
+                            id = "startTime"
+                            type = "datetime-local"
+                            placeholder = "Start Time"
+                            defaultValue={startTime}
+                            state={setStartTime}
+                            required="required"
+                        />
+
+                        <FormInput
+                            label = "End Time"
+                            id = "endTime"
+                            type = "datetime-local"
+                            placeholder = "End Time"
+                            defaultValue={endTime}
+                            state={setEndTime}
+                            required="required"
+                        />
+                    
                         <Flex 
                             m="20px 0px" 
                             p="5px 10px" 

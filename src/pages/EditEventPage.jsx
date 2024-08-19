@@ -34,8 +34,21 @@ export const EditEventPage = () =>
     {
         async function fetchEvent()
         {
-            const response = await fetch(`http://localhost:3000/events/${eventId}`);
-            const fetchedEvent = await response.json();
+            try
+            {
+                const response = await fetch(`http://localhost:3000/events/${eventId}`);
+                
+                if (!response.ok)
+                {
+                    throw new Error('Something went wrong while trying to fetch the Event')
+                }
+
+                const fetchedEvent = await response.json();
+            }
+            catch (error)
+            {
+                console.log(error);
+            }
             setTitle(fetchedEvent.title);
             setCreatedBy(fetchedEvent.createdBy);
             setDescription(fetchedEvent.description);

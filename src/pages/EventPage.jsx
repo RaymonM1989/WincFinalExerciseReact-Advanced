@@ -15,11 +15,39 @@ import { CalendarIcon, TimeIcon } from '@chakra-ui/icons';
 
 export const loader = async ( { params } ) =>
   {
-    const event =      await fetch(`http://localhost:3000/events/${params.eventId}`);
-    const users =      await fetch("http://localhost:3000/users");
-    const categories = await fetch("http://localhost:3000/categories");
- 
-    return { event: await event.json(), users: await users.json(), categories: await categories.json() };
+    try
+    {
+      const event =      await fetch(`http://localhost:3000/events/${params.eventId}`);
+
+      if (!event.ok)
+      {
+        throw new Error('Something went wrong while trying to fetch the Event')
+      }
+
+      const users =      await fetch("http://localhost:3000/users");
+
+      if (!users.ok)
+      {
+        throw new Error('Something went wrong while trying to fetch the Users')
+      }
+
+      const categories = await fetch("http://localhost:3000/categories");
+
+      if (!categories.ok)
+      {
+        throw new Error('Something went wrong while trying to fetch the Categories')
+      }
+  
+      return { 
+        event: await event.json(), 
+        users: await users.json(), 
+        categories: await categories.json() };
+    }
+    catch (error)
+    {
+      console.error(error);
+      return { error: error.message };
+    }
   }
 
 

@@ -9,10 +9,31 @@ import { SearchIcon }           from '@chakra-ui/icons';
 
 export const loader = async () =>
 {
-  const events =      await fetch("http://localhost:3000/events");
-  const categories =  await fetch("http://localhost:3000/categories");
+  try
+  {
+    const events = await fetch("http://localhost:3000/events");
 
-  return { events: await events.json(), categories: await categories.json() };
+    if (!events.ok)
+    {
+      throw new Error('Something went wrong while trying to fetch the Events')
+    }
+
+    const categories =  await fetch("http://localhost:3000/categories");
+
+    if (!categories.ok)
+    {
+      throw new Error('Something went wrong while trying to fetch the Categories')
+    }
+
+    return { 
+      events: await events.json(), 
+      categories: await categories.json() };
+  }
+  catch (error)
+  {
+    console.log(error);
+    return { error: error.message };
+  }
 }
 
 

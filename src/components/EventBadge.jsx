@@ -66,7 +66,7 @@ export const EventBadge = ( {event, categories} ) =>
                 <Flex direction="row" justify="center" gap ={4}>
                     { event.categoryIds.map((entry) => 
                     ( 
-                        <Tag key={entry} label={categories.find((category) => category.id === entry).name.toUpperCase()} bgcolor="rgb(158, 211, 255)" color="rgb(50, 125, 252)" />
+                        <Tag key={entry} label={categories.find(category => category.id === entry).name.toUpperCase()} bgcolor="rgb(158, 211, 255)" color="rgb(50, 125, 252)" />
                     ))}
                 </Flex>
 

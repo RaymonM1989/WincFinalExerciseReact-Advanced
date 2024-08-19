@@ -12,10 +12,31 @@ import { FormInput } from '../components/FormInput';
 
 export const loader = async () =>
 {
-    const users =      await fetch("http://localhost:3000/users");
-    const categories =  await fetch("http://localhost:3000/categories");
+    try
+    {
+        const users =      await fetch("http://localhost:3000/users");
 
-    return { users: await users.json(), categories: await categories.json() };
+        if (!users.ok)
+        {
+            throw new Error('Something went wrong while trying to fetch the Users')
+        }
+
+        const categories =  await fetch("http://localhost:3000/categories");
+
+        if (!categories.ok)
+        {
+            throw new Error('Something went wrong while trying to fetch the Categories')
+        }
+        
+        return { 
+            users: await users.json(), 
+            categories: await categories.json() };
+    }
+    catch (error)
+    {
+        console.error(error);
+        return { error: error.message };
+    }
 }
 
 
@@ -23,7 +44,7 @@ export const NewEventPage = () =>
 {
     const navigate = useNavigate();
 
-    const { users, categories }             = useLoaderData();
+    const { users, categories } = useLoaderData();
 
     const [isLoading, setIsLoading] = useState(false);
     const noErrorState = { happened: false, msg: "" };

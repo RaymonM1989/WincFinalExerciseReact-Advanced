@@ -1,16 +1,21 @@
-import { useLoaderData, 
-         Link, 
-         useNavigate, 
-         useParams 
-        }                         from 'react-router-dom';
-import { Tag }                    from '../components/Tag';
+import { useLoaderData, useNavigate, useParams }  from 'react-router-dom';
+import { Tag }                                    from '../components/Tag';
+import { Button }                                 from '../components/Button';
+import { EventForm }                              from '../components/EventForm';
 import { Flex, 
          Heading, 
          Text, 
          Box, 
-         Image 
-        }                         from '@chakra-ui/react';
-import { CalendarIcon, TimeIcon } from '@chakra-ui/icons';
+         Image, 
+         Grid, 
+         GridItem, 
+         Modal, 
+         ModalOverlay, 
+         ModalContent, 
+         ModalCloseButton, 
+         useDisclosure }                          from '@chakra-ui/react';
+import { CalendarIcon, TimeIcon }                 from '@chakra-ui/icons';
+
 
 
 export const loader = async ( { params } ) =>
@@ -53,13 +58,16 @@ export const loader = async ( { params } ) =>
 
 export const EventPage = (  ) => 
 {
+  const { isOpen, onClose, onOpen } = useDisclosure();
+
   const { event, users, categories } = useLoaderData();
   const { eventId } = useParams();
   const navigate = useNavigate();
 
-  const date  = event.startTime.split("T")[0];
-  const start = event.startTime.split("T")[1].slice(0, 5);
-  const end   = event.endTime.split("T")[1].slice(0, 5);
+  const dateStart  = event.startTime.split("T")[0];
+  const dateEnd  = event.endTime.split("T")[0];
+  const timeStart = event.startTime.split("T")[1].slice(0, 5);
+  const timeEnd   = event.endTime.split("T")[1].slice(0, 5);
 
 
   const deleteEvent = async eventId => {
@@ -78,162 +86,186 @@ export const EventPage = (  ) =>
       }
     }}
 
+
   return (
-    <Flex 
-      width="100%" 
-      minHeight="100vh" 
-      pb="40px" 
-      justify="center"
-      bg="rgb(84, 144, 247)"
-    >
+  <Flex 
+    direction="column" 
+    width="100%" 
+    minHeight="100vh" 
+    padding="40px" 
+    bgGradient="linear(blue.100, white, blue.100)" 
+    justify="flex-start" 
+    align="center">
 
-      <Flex 
-        direction="column" 
-        width="90%"
-        mt="20px"  
-        align="center" 
-      >
+      <Flex direction="column" width="100%" align="center">
 
-        <Heading color="rgb(252, 252, 230)">{event.title}</Heading>
+        <Flex position="absolute" top="40px" left="30px">
+          <Button  link="/" label="BACK" /> 
+        </Flex>
 
-        <Flex 
-          direction="column"
-          w="100%"
-          minH="80vh"
-          mt="20px"
-          justify="center"
-          align="center"
+        <Heading color="rgb(000, 020, 040)">{event.title}</Heading>
+
+        <Grid 
+          width="100%" 
+          mt="20px" 
           overflow="hidden" 
-          bg="rgb(252, 252, 230)" 
-          border="2px solid rgb(50, 125, 252)" 
+          bg="rgb(200, 230, 240)" 
+          border="2px solid rgb(000, 130, 180)" 
           borderRadius="lg" 
-          boxShadow="lg"
+          boxShadow="lg" 
+          templateAreas=
+          {{ base:
+          ` "description"
+            "image"
+            "buttons"
+          `,
+          md:
+          ` "description image"
+            "buttons image"
+          `}}
+          gridTemplateRows={{base: "auto 1fr auto", md: "1fr 1fr"}}
+          gridTemplateColumns={{base: "1fr", md: "1fr 1fr"}}
         >
-
-          <Heading size={{base: "md", md: "lg"}} color="rgb(0, 52, 140)">{event.description}</Heading>
-
-          <Flex 
-            direction={{base: "column", md: "row"}}
-            w="100%" 
-            m="20px 0px" 
-            justify="space-around" 
-            align="center"
-          >
-          
-            <Flex 
-              direction="column" 
-              w={{base: "80%", md: "40%"}} 
-              minH="25vw" 
-              m="20px" 
-              justify="space-between" 
-              align="center"
-            >
-
+            <GridItem area={"description"}>
               <Flex 
-                direction={{base: "column", md: "row"}} 
-                w="90%" 
-                justify="space-around" 
-                align="center"
-              >
-                <Text color="rgb(50, 125, 252)"><CalendarIcon color="rgb(50, 125, 252)"/> {date}</Text>
-                <Text color="rgb(50, 125, 252)"><TimeIcon color="rgb(50, 125, 252)"/> {start} - {end}</Text>
-              </Flex>
-
-              <Flex 
-                direction="row" 
-                minWidth="150px" 
-                justify="space-between" 
-                align="center" 
-                bg="rgb(50, 125, 252)" 
-                color="rgb(252, 252, 230)"
-                borderRadius="50px"
-                border="2px solid rgb(0, 52, 140)" 
-                boxShadow="md"
-              >
-                <Box 
-                  m="5px" 
-                  overflow="hidden"  
-                  borderRadius="100%" 
-                  border="2px solid rgb(252, 252, 230)"
-                >
-                  <Image 
-                    src={users.find((user) => user.id === event.createdBy).image} 
-                    alt="User Portrait" 
-                    width="40px" 
-                    height="40px"
-                  />
-                </Box>
-                <Text m="0px 15px">{users.find((user) => user.id === event.createdBy).name} </Text>
-              </Flex>
-            </Flex>
-      
-            <Flex direction="column" w={{base: "80%", md: "40%"}}>
-              <Image 
-                src={event.image} 
-                alt={event.title} 
+                textAlign="center" 
+                p="20px" 
                 width="100%" 
                 height="100%" 
-                borderRadius="lg" 
-                border="2px solid rgb(0, 52, 140)"
-              />
+                direction="column" 
+                justify="space-around" 
+                align="center" 
+                gap="20px"
+              >
 
-              <Flex direction="row" justify="center" gap ={4}>
+                <Heading size={{base: "md", md: "lg"}} color="rgb(000, 080, 100)">{event.description}</Heading>
+
+                {dateStart == dateEnd ?  
+                (
+                  <Flex direction="column">
+                    <Text color="rgb(000, 080, 100)"><CalendarIcon color="rgb(000, 080, 100)"/> {dateStart}</Text>
+                    <Text color="rgb(000, 080, 100)"><TimeIcon color="rgb(000, 080, 100)"/> {timeStart} - {timeEnd}</Text>
+                  </Flex>
+                ) : (
+                  <Flex direction="column" align="center" color="rgb(000, 080, 100)">
+                    <Text>FROM</Text>
+                    <Text color="rgb(000, 080, 100)"> {dateStart} ~ {timeStart}</Text>
+                    <Text>TO</Text>
+                    <Text color="rgb(000, 080, 100)"> {dateEnd} ~ {timeEnd}</Text>
+                  </Flex>
+                )}
+
+                <Flex direction="row" justify="center" gap="20px" >
                   { event.categoryIds.map((entry) => 
                   ( 
                       <Tag 
                         key={entry} 
-                        label={categories.find((category) => category.id === entry).name.toUpperCase()} 
-                        bgcolor="rgb(158, 211, 255)" 
-                        color="rgb(50, 125, 252)" 
+                        label={categories.find((category) => category.id === entry).name.toUpperCase()}  
                       />
                   ))}
+                </Flex>
               </Flex>
-            </Flex>
-          </Flex>
-          
-          <Flex direction="row" gap={6}>
+            </GridItem>
 
-            <Flex 
-              m="10px 0px 20px 0px" 
-              p="5px 10px" 
-              justify="center" 
-              align="center" 
-              bg="rgb(50, 125, 252)" 
-              color="rgb(252, 252, 230)" 
-              borderRadius="lg" 
-              border="2px solid rgb(0, 52, 140)"
-            >
-              <Link to={`/event/${event.id}/edit`}> EDIT EVENT </Link>
-            </Flex>
-            <Flex 
-              m="10px 0px 20px 0px" 
-              p="5px 10px" 
-              justify="center" 
-              align="center" 
-              bg="rgb(50, 125, 252)" 
-              color="rgb(252, 252, 230)" 
-              borderRadius="lg" 
-              border="2px solid rgb(0, 52, 140)"
-            >
-              <Text cursor="pointer" onClick={() => deleteEvent(eventId)} > DELETE EVENT </Text>
-            </Flex>
+            <GridItem area={"image"}>
+              <Flex 
+                width="100%" 
+                height="100%" 
+                justify="center" 
+                align="center"
+              >
+                <Image 
+                  src={event.image} 
+                  alt={event.title} 
+                  m="10px"
+                  width="100%"  
+                  borderRadius="lg" 
+                  border="2px solid rgb(000, 130, 180)"
+                  boxShadow="lg"
+                />
+              </Flex>
+            </GridItem>
 
-          </Flex>
-        </Flex>
+            <GridItem area={"buttons"}>
+              <Flex 
+                textAlign="center" 
+                p="20px" 
+                width="100%" 
+                height="100%" 
+                direction="column" 
+                justify="space-around" 
+                align="center" 
+                gap="20px"
+              >
+                <Flex 
+                  direction="row" 
+                  minWidth="150px" 
+                  justify="space-between" 
+                  align="center" 
+                  bg="rgb(160, 220, 250)" 
+                  color="rgb(000, 080, 100)"
+                  borderRadius="50px"
+                  border="2px solid rgb(000, 130, 180)" 
+                  boxShadow="md"
+                >
+                  <Box 
+                    m="5px" 
+                    overflow="hidden"  
+                    borderRadius="100%" 
+                    border="2px solid rgb(252, 252, 230)"
+                  >
+                    <Image 
+                      src={users.find((user) => user.id === event.createdBy).image} 
+                      alt="User Portrait" 
+                      width="40px" 
+                      height="40px"
+                    />
+                  </Box>
+                  <Text m="0px 15px">{users.find((user) => user.id === event.createdBy).name} </Text>
+                </Flex>
+                
+                <Flex direction="row" justify="center" gap="20px" >
 
-        <Flex 
-          mt="20px" 
-          p="5px 10px" 
-          justify="center" 
-          align="center" 
-          bg="rgb(50, 125, 252)" 
-          color="rgb(252, 252, 230)" 
-          borderRadius="lg" 
-          border="2px solid rgb(0, 52, 140)"
-        >
-            <Link to={'/'}>BACK</Link>
-        </Flex>
+                  <Flex 
+                    m="10px 0px 20px 0px" 
+                    p="5px 10px" 
+                    justify="center" 
+                    align="center" 
+                    color="rgb(000, 020, 040)" 
+                    borderRadius="lg" 
+                    border="2px solid rgb(000, 130, 180)"
+                    boxShadow='lg'
+                    _hover={{border: "2px solid rgb(000, 020, 040)", bg: "rgb(160, 220, 250)" }}
+                  >
+                    <Text cursor="pointer" onClick={onOpen} > UPDATE EVENT </Text>
+                  </Flex>
+
+                  <Flex 
+                    m="10px 0px 20px 0px" 
+                    p="5px 10px" 
+                    justify="center" 
+                    align="center" 
+                    color="rgb(000, 020, 040)" 
+                    borderRadius="lg" 
+                    border="2px solid rgb(000, 130, 180)"
+                    boxShadow='lg'
+                    _hover={{border: "2px solid rgb(000, 020, 040)", bg: "rgb(160, 220, 250)" }}
+                  >
+                    <Text cursor="pointer" onClick={() => deleteEvent(eventId)} > DELETE EVENT </Text>
+                  </Flex>
+                </Flex>
+              </Flex>
+            </GridItem>
+          </Grid>
       </Flex>
+
+      <Modal size="full" isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalCloseButton />
+          <EventForm callerID="2"/>
+        </ModalContent>
+      </Modal>
     </Flex>
-  ) 
-}
+  );
+};

@@ -1,11 +1,10 @@
-import { Link }                   from 'react-router-dom';
-import { Tag }                    from './Tag';
+import { Link }                     from 'react-router-dom';
+import { Tag }                      from './Tag';
 import { Flex, 
          Image, 
          Text, 
-         Heading 
-        }                         from '@chakra-ui/react';
-import { CalendarIcon, TimeIcon } from '@chakra-ui/icons';
+         Heading }                  from '@chakra-ui/react';
+import { CalendarIcon, TimeIcon }   from '@chakra-ui/icons';
 
 
 export const EventBadge = ( {event, categories} ) =>
@@ -16,10 +15,10 @@ export const EventBadge = ( {event, categories} ) =>
 
     return (
         <Flex 
+            role="group"
             w="300px" 
-            bg="rgb(252, 252, 230)" 
-            borderWidth="2px" 
-            borderColor="rgb(50, 125, 252)" 
+            bg="rgb(200, 230, 240)" 
+            border="2px solid rgb(000, 130, 180)" 
             borderRadius="lg" 
             overflow="hidden" 
             direction="column" 
@@ -28,7 +27,7 @@ export const EventBadge = ( {event, categories} ) =>
             boxShadow="lg" 
             _hover=
             {{ 
-                borderColor: "rgb(0, 52, 140)", 
+                borderColor: "rgb(000, 020, 040)", 
                 boxShadow: "xl",
             }}
         >
@@ -37,10 +36,10 @@ export const EventBadge = ( {event, categories} ) =>
 
                 <Heading 
                     fontSize="1.3em" 
-                    color="rgb(252, 252, 230)" 
-                    bg="rgb(0, 52, 140)"
+                    color="rgb(000, 020, 040)" 
                     textShadow="0.5px 0.5px rgb(114, 163, 247)"
                     p="5px 0px 10px 0px"
+                    _groupHover={{bg: "rgb(160, 220, 250)"}}
                 >
                     {event.title}
                 </Heading>
@@ -54,23 +53,29 @@ export const EventBadge = ( {event, categories} ) =>
                     boxShadow='md' 
                 />
 
-                <Text fontSize="1.2em" color="rgb(0, 52, 140)">
+                <Text fontSize="1.2em" color="rgb(000, 020, 040)" m="5px 0px">
                     { event.description }
                 </Text>
 
-                <Flex direction="row" justify="space-around">
-                    <Text color="rgb(50, 125, 252)"><CalendarIcon color="rgb(50, 125, 252)"/> {date}</Text>
-                    <Text color="rgb(50, 125, 252)"><TimeIcon color="rgb(50, 125, 252)"/> {start} - {end}</Text>
+                <Flex direction="row" justify="space-around" width="300px">
+                    <Text color="rgb(000, 080, 100)"><CalendarIcon color="rgb(000, 080, 100)"/> {date}</Text>
+                    <Text color="rgb(000, 080, 100)"><TimeIcon color="rgb(000, 080, 100)"/> {start} - {end}</Text>
                 </Flex>
 
-                <Flex direction="row" justify="center" gap ={4}>
+                <Flex 
+                    direction="row" 
+                    justify="center" 
+                    width="300px" 
+                    gap={1}
+                >
                     { event.categoryIds.map((entry) => 
                     ( 
-                        <Tag key={entry} label={categories.find(category => category.id === entry).name.toUpperCase()} bgcolor="rgb(158, 211, 255)" color="rgb(50, 125, 252)" />
+                        <Tag key={entry} label={categories.find(category => category.id === entry).name.toUpperCase()} />
                     ))}
                 </Flex>
 
             </Link>
+
         </Flex>
-    )
-}
+    );
+};
